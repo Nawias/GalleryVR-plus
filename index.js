@@ -55,6 +55,7 @@ export default class GalleryVR extends React.Component {
   render() {
     return (
       <View style={styles.panel}>
+        <View />
         <View
           style={{
             opacity: this.state.hidden ? 0.0 : 1.0,
@@ -63,23 +64,38 @@ export default class GalleryVR extends React.Component {
         >
           {this.renderPlayerOrPicker()}
         </View>
-        <View style={styles.toggleButton}>
-          <VrButton
-            onClick={this.toggleWindow}
-            style={{
-              height: 40,
-            }}
-          >
-            <Image
-              style={styles.icon}
-              source={asset(
-                `icons/${this.state.hidden ? "closed.png" : "open.png"}`
-              )}
-            />
-          </VrButton>
-        </View>
+        <View style={styles.buttonGroup}>{this.renderButtons()}</View>
       </View>
     );
+  }
+
+  renderButtons() {
+    if (this.state.hidden) {
+      return (
+        <VrButton onClick={this.toggleWindow} style={styles.button}>
+          <Image style={styles.icon} source={asset(`icons/closed.png`)} />
+        </VrButton>
+      );
+    } else {
+      return (
+        <View
+          style={{
+            flexDirection: "row",
+            width: "100%",
+            justifyContent: "center",
+          }}
+        >
+          <VrButton onClick={this.goBack} style={styles.button}>
+            <Image style={styles.icon} source={asset(`icons/back.png`)} />
+          </VrButton>
+
+          <VrButton onClick={this.toggleWindow} style={styles.button}>
+            <Image style={styles.icon} source={asset(`icons/open.png`)} />
+          </VrButton>
+          <View style={styles.button} />
+        </View>
+      );
+    }
   }
 }
 
@@ -92,11 +108,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  toggleButton: {
+  buttonGroup: {
     flexGrow: 2,
-    justifyContent: "flex-end",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "flex-end",
   },
-
+  button: {
+    height: 40,
+    width: 40,
+    margin: "0 0.5",
+  },
   icon: {
     height: "100%",
     padding: 10,
