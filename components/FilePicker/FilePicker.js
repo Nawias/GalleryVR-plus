@@ -19,7 +19,7 @@ const Files = {
       name: "videos/",
       type: "dir",
       files: [
-        { name: "360_concert.mp4", type: "file" },
+        { name: "360_concert.webm", type: "file" },
         { name: "360_music.webm", type: "file" },
         { name: "lego.mp4", type: "file" },
       ],
