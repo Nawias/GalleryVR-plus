@@ -10,8 +10,8 @@ export default class MediaPlayer extends React.Component {
     this.update();
   };
 
-  componentDidUpdate = () => {
-    this.update();
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevProps.stereo !== this.props.stereo) this.update();
   };
 
   update() {

@@ -60,6 +60,13 @@ export default class GalleryVR extends React.Component {
     });
   };
 
+  goBack = () => {
+    if (this.state.video !== "" && this.state.videoFormat !== "") {
+      this.setState({ video: "", videoFormat: "" });
+      Environment.setBackgroundImage(asset("360_world.jpg"));
+    }
+  };
+
   renderButtons() {
     if (this.state.hidden) {
       return (
