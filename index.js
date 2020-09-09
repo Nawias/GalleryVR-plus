@@ -89,8 +89,8 @@ export default class GalleryVR extends React.Component {
               source={asset(
                 `icons/${
                   this.state.videoFormat === "3D"
-                    ? "globe.png"
-                    : "curvedPanel.png"
+                    ? "curvedPanel.png"
+                    : "globe.png"
                 }`
               )}
             />
