@@ -101,7 +101,11 @@ class VideoPlayer extends React.PureComponent<Props, State> {
       controlVisible: true,
       isControlFocused: false,
     };
-    this._player = VideoModule.createPlayer();
+    if (this.props.player === null || this.props.player === undefined) {
+      this._player = VideoModule.createPlayer();
+    } else {
+      this._player = this.props.player;
+    }
   }
 
   componentWillReceiveProps(nextProps: Props) {
@@ -135,7 +139,8 @@ class VideoPlayer extends React.PureComponent<Props, State> {
         1
       );
     }
-    this._player.destroy();
+    if (this.props.player === null || this.props.player === undefined)
+      this._player.destroy();
     this._unmounted = true;
   }
 

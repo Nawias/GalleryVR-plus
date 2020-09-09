@@ -7,14 +7,24 @@ export default class MediaPlayer extends React.Component {
   spatialPlayer = VideoModule.createPlayer("spatial");
 
   componentDidMount = () => {
+    this.update();
+  };
+
+  componentDidUpdate = () => {
+    this.update();
+  };
+
+  update() {
     if (this.props.stereo !== "2D") {
       this.spatialPlayer.play({
         source: { url: this.props.source.uri },
         muted: false,
       });
       Environment.setBackgroundVideo("spatial", {});
+    } else {
+      Environment.setBackgroundImage(asset("360_world.jpg"));
     }
-  };
+  }
 
   componentWillUnmount() {
     this.spatialPlayer.destroy();
@@ -36,6 +46,7 @@ export default class MediaPlayer extends React.Component {
               width: 800,
               height: 400,
             }}
+            player={this.spatialPlayer}
           />
         </View>
       );

@@ -52,22 +52,13 @@ export default class GalleryVR extends React.Component {
     }
   }
 
-  render() {
-    return (
-      <View style={styles.panel}>
-        <View />
-        <View
-          style={{
-            opacity: this.state.hidden ? 0.0 : 1.0,
-            height: this.state.hidden ? 0 : "90%",
-          }}
-        >
-          {this.renderPlayerOrPicker()}
-        </View>
-        <View style={styles.buttonGroup}>{this.renderButtons()}</View>
-      </View>
-    );
-  }
+  toggle360 = () => {
+    if (this.state.videoFormat === "") return;
+
+    this.setState({
+      videoFormat: `${this.state.videoFormat === "2D" ? "3D" : "2D"}`,
+    });
+  };
 
   renderButtons() {
     if (this.state.hidden) {
@@ -92,10 +83,38 @@ export default class GalleryVR extends React.Component {
           <VrButton onClick={this.toggleWindow} style={styles.button}>
             <Image style={styles.icon} source={asset(`icons/open.png`)} />
           </VrButton>
-          <View style={styles.button} />
+          <VrButton onClick={this.toggle360} style={styles.button}>
+            <Image
+              style={styles.icon}
+              source={asset(
+                `icons/${
+                  this.state.videoFormat === "3D"
+                    ? "globe.png"
+                    : "curvedPanel.png"
+                }`
+              )}
+            />
+          </VrButton>
         </View>
       );
     }
+  }
+
+  render() {
+    return (
+      <View style={styles.panel}>
+        <View />
+        <View
+          style={{
+            opacity: this.state.hidden ? 0.0 : 1.0,
+            height: this.state.hidden ? 0 : "90%",
+          }}
+        >
+          {this.renderPlayerOrPicker()}
+        </View>
+        <View style={styles.buttonGroup}>{this.renderButtons()}</View>
+      </View>
+    );
   }
 }
 
