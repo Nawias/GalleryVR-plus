@@ -72,29 +72,36 @@ export default class FilePicker extends React.Component {
     return <View style={styles.files}>{files}</View>;
   };
 
+  renderBackButton = () => {
+    if (this.state.currentDirectory === "")
+      return <View style={{ flexBasis: "5%" }} />;
+    return (
+      <VrButton
+        onClick={() => this.changeDirectory({ name: "" })}
+        style={styles.backButton}
+      >
+        <Text style={{ textAlign: "center" }}>{"<"}</Text>
+      </VrButton>
+    );
+  };
+
   render() {
     return (
       <View style={styles.filePicker}>
         <View style={styles.header}>
-          <VrButton
-            onClick={() => this.changeDirectory({ name: "" })}
-            style={styles.backButton}
-          >
-            <Text> {"<"} </Text>
-          </VrButton>
-          <Text
-            style={{
-              alignSelf: "center",
-              flexGrow: 2,
-              textAlign: "center",
-            }}
-          >
+          {this.renderBackButton()}
+          <Text style={styles.headerText}>
             {`File Picker - ${
               this.state.currentDirectory === ""
                 ? "Home"
                 : this.state.currentDirectory
             }`}
           </Text>
+          <View
+            style={{
+              flexBasis: "5%",
+            }}
+          />
         </View>
         {this.renderFiles()}
       </View>
@@ -118,10 +125,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  headerText: {
+    height: 40,
+    width: "80%",
+    paddingTop: 1,
+    textAlign: "center",
+  },
   backButton: {
+    flexBasis: "5%",
     padding: "1 1",
+    width: 40,
+    height: 40,
     backgroundColor: "#171717",
-    alignSelf: "flex-start",
   },
   files: {
     padding: "1 1",

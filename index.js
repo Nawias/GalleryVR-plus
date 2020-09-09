@@ -12,6 +12,13 @@ import {
 import MediaPlayer from "./components/MediaPlayer/MediaPlayer";
 import FilePicker from "./components/FilePicker/FilePicker";
 
+const matchers = {
+  video: /(^|.)[a-zA-Z0-9]*\.(mp4|MP4|avi|AVI|webm|WEBM)$/,
+  image: /(^|.)[a-zA-Z0-9]*\.(png|PNG|jpg|JPG|jpeg|JPEG)$/,
+  "360_video": /(^|.)360_[a-zA-Z0-9]*\.(mp4|MP4|avi|AVI|webm|WEBM)$/,
+  "360_image": /(^|.)360_[a-zA-Z0-9]*\.(png|PNG|jpg|JPG|jpeg|JPEG)$/,
+};
+
 export default class GalleryVR extends React.Component {
   state = {
     hidden: false,
@@ -25,14 +32,13 @@ export default class GalleryVR extends React.Component {
   };
 
   playFile = (file) => {
-    file = "" + file;
-    if (file.startsWith("photos/360_")) {
+    if (matchers["360_image"].test(file)) {
       Environment.setBackgroundImage(asset(file), {
         rotateTransform: [{ rotateY: "180deg" }],
       });
-    } else if (file.startsWith("videos/360_")) {
+    } else if (matchers["360_video"].test(file)) {
       this.setState({ video: file, videoFormat: "3D" });
-    } else if (file.startsWith("videos")) {
+    } else if (matchers["video"].test(file)) {
       this.setState({ video: file, videoFormat: "2D" });
     }
     console.log(file);
