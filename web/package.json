@@ -2,7 +2,7 @@
   "name": "GalleryVR",
   "version": "0.0.1",
   "private": true,
-  "homepage": "https://Nawias.github.io/GalleryVR",
+  "homepage": "https://Nawias.github.io/GalleryVR-plus",
   "scripts": {
     "start": "node node_modules/react-360/scripts/packager.js",
     "bundle": "node node_modules/react-360/scripts/bundle.js && sh copy_assets.sh",
