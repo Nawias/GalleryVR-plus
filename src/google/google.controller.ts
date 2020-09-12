@@ -1,6 +1,7 @@
 import { Controller, Get, UseGuards, Req, Session } from '@nestjs/common';
 import { GoogleService } from './google.service';
 import { AuthGuard } from '@nestjs/passport';
+import { request } from 'express';
 
 @Controller('google')
 export class GoogleController {
@@ -14,5 +15,10 @@ export class GoogleController {
   @UseGuards(AuthGuard('google'))
   googleAuthRedirect(@Req() req, @Session() session) {
     return this.googleService.googleLogin(req, session);
+  }
+
+  @Get('listFiles')
+  async googleDriveListFiles(@Req() request, @Session() session) {
+    return await this.googleService.listFiles(request, session);
   }
 }

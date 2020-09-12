@@ -1,10 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Unique, Long } from 'typeorm';
 
 @Entity()
 @Unique(['id', 'googleId'])
 export class User {
   constructor(
-    googleId: number,
+    googleId: string,
     firstName: string,
     lastName: string,
     email: string,
@@ -19,7 +19,7 @@ export class User {
   id: number;
 
   @Column({ name: 'googleId' })
-  googleId: number;
+  googleId: string;
 
   @Column()
   firstName: string;

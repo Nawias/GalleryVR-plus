@@ -17,6 +17,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         'profile',
         'openid',
         'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive',
       ],
     });
   }
