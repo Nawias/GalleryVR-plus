@@ -22,8 +22,9 @@ export class GoogleController {
 
   @Get('redirect')
   @UseGuards(AuthGuard('google'))
-  googleAuthRedirect(@Req() req, @Session() session) {
-    return this.googleService.googleLogin(req, session);
+  async googleAuthRedirect(@Req() req, @Session() session) {
+    this.googleService.googleLogin(req, session);
+    req.res.redirect('http://localhost:8081/index.html');
   }
 
   @Get('listFiles')

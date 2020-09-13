@@ -32,7 +32,10 @@ export class GoogleService {
     const { accessToken, refreshToken } = req.user;
     session.accessToken = accessToken;
     session.refreshToken = refreshToken;
-
+    this.oAuth2Client.setCredentials({
+      refresh_token: session.refreshToken,
+      access_token: session.accessToken,
+    });
     const { id, googleId, firstName, lastName, email } = req.user;
 
     return {
@@ -42,12 +45,15 @@ export class GoogleService {
   }
 
   async listFiles(parent, @Session() session) {
-    this.oAuth2Client.setCredentials({
-      refresh_token: session.refreshToken,
-      access_token: session.accessToken,
-    });
+    if (session.accessToken !== undefined)
+      this.oAuth2Client.setCredentials({
+        refresh_token: session.refreshToken,
+        access_token: session.accessToken,
+      });
     let parentFolder =
-      parent !== undefined ? parent : await this.getRootFolder(session);
+      parent !== undefined && parent !== '' && parent !== 'undefined'
+        ? parent
+        : await this.getRootFolder();
     let result = (
       await this.drive.files.list({
         q: `(mimeType='application/vnd.google-apps.folder' or mimeType contains 'image/' or mimeType contains 'video/') and '${parentFolder}' in parents`,
@@ -55,10 +61,10 @@ export class GoogleService {
         spaces: 'drive',
       })
     ).data.files;
-    this.oAuth2Client.setCredentials({});
+    //this.oAuth2Client.setCredentials({});
     return result;
   }
-  async getRootFolder(@Session() session) {
+  async getRootFolder() {
     let rootFolder = '';
     let folders = (
       await this.drive.files.list({
@@ -78,10 +84,11 @@ export class GoogleService {
   }
 
   async getFile(fileId: any, session: any, response: Response): Promise<any> {
-    this.oAuth2Client.setCredentials({
-      refresh_token: session.refreshToken,
-      access_token: session.accessToken,
-    });
+    if (session.accessToken !== undefined)
+      this.oAuth2Client.setCredentials({
+        refresh_token: session.refreshToken,
+        access_token: session.accessToken,
+      });
 
     this.drive.files.get(
       { fileId: fileId, alt: 'media' },

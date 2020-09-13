@@ -1,59 +1,90 @@
-import React from "react";
-import { VrButton, Text, View, StyleSheet } from "react-360";
-import File from "./File";
+import React from 'react';
+import { VrButton, Text, View, StyleSheet } from 'react-360';
 
-const Files = {
-  name: "",
-  type: "dir",
-  files: [
-    {
-      name: "photos/",
-      type: "dir",
-      files: [
-        { name: "360_ocean.jpg", type: "file" },
-        { name: "360_city.jpg", type: "file" },
-        { name: "360_mountains.jpg", type: "file" },
-      ],
-    },
-    {
-      name: "videos/",
-      type: "dir",
-      files: [
-        { name: "360_concert.webm", type: "file" },
-        { name: "360_music.webm", type: "file" },
-        { name: "lego.mp4", type: "file" },
-      ],
-    },
-  ],
-};
+import File from './File';
+import Axios from 'axios';
+
+class Stack {
+  constructor() {
+    this.items = [];
+  }
+  push = item => this.items.push(item);
+  pop = () => this.items.pop();
+  isEmpty = () => this.items.length === 0;
+  clear = () => {
+    this.items.length = 0;
+  };
+}
 
 export default class FilePicker extends React.Component {
   state = {
-    currentDirectory: "",
+    currentDirectoryId: '',
+    currentDirectoryName: 'My Drive',
+    files: [],
   };
 
-  changeDirectory = (file) => {
-    this.setState({ currentDirectory: file.name });
+  _parents = new Stack();
+
+  async componentDidMount() {
+    await Axios.get('http://localhost:3000/google/listFiles', {
+      withCredentials: true,
+    })
+      .catch(error => {
+        console.log('COMPONENT:', error);
+      })
+      .then(res => {
+        data = res.data;
+        this.setState({
+          files: data,
+        });
+        console.log(data);
+      });
+  }
+
+  changeDirectory = file => {
+    let parent = file;
+    if (file.parents !== undefined)
+      this._parents.push({
+        id: this.state.currentDirectoryId,
+        name: this.state.currentDirectoryName,
+      });
+    else parent = this._parents.pop();
+    Axios.get(
+      `http://localhost:3000/google/listFiles${
+        parent.id !== '' ? `?parent=${parent.id}` : ''
+      }`,
+      {
+        withCredentials: true,
+      },
+    )
+      .catch(error => {
+        console.log('COMPONENT:', error);
+      })
+      .then(res => {
+        data = res.data;
+        this.setState({
+          currentDirectoryId: parent.id,
+          currentDirectoryName: parent.name,
+          files: data,
+        });
+        console.log(this.state);
+      });
   };
 
-  playFile = (file) => {
-    console.log("playfile");
+  playFile = file => {
+    console.log('playfile');
     this.props.playFile && this.props.playFile(file.name);
   };
 
-  handleFileClick = (file) => {
+  handleFileClick = file => {
     console.log(file);
-    if (file.type === "dir") this.changeDirectory(file);
+    if (file.mimeType.includes('folder')) this.changeDirectory(file);
     else this.playFile(file);
   };
 
   renderFiles = () => {
-    let dir = Files.files.find(
-      (d) => d.type === "dir" && d.name === this.state.currentDirectory
-    );
-
-    if (dir === undefined) dir = Files;
-    let files = dir.files.map((file) => {
+    dir = this.state;
+    let files = dir.files.map(file => {
       let name = `${file.name}`;
       return (
         <File
@@ -61,8 +92,10 @@ export default class FilePicker extends React.Component {
           name={name}
           onClick={() =>
             this.handleFileClick({
-              name: this.state.currentDirectory + file.name,
-              type: file.type,
+              id: file.id,
+              name: file.name,
+              mimeType: file.mimeType,
+              parents: file.parents,
             })
           }
         />
@@ -73,14 +106,14 @@ export default class FilePicker extends React.Component {
   };
 
   renderBackButton = () => {
-    if (this.state.currentDirectory === "")
-      return <View style={{ flexBasis: "5%" }} />;
+    if (this.state.currentDirectoryId === '')
+      return <View style={{ flexBasis: '5%' }} />;
     return (
       <VrButton
-        onClick={() => this.changeDirectory({ name: "" })}
+        onClick={() => this.changeDirectory({ id: this.state.parent })}
         style={styles.backButton}
       >
-        <Text style={{ textAlign: "center" }}>{"<"}</Text>
+        <Text style={{ textAlign: 'center' }}>{'<'}</Text>
       </VrButton>
     );
   };
@@ -92,14 +125,14 @@ export default class FilePicker extends React.Component {
           {this.renderBackButton()}
           <Text style={styles.headerText}>
             {`File Picker - ${
-              this.state.currentDirectory === ""
-                ? "Home"
-                : this.state.currentDirectory
+              this.state.currentDirectoryName === ''
+                ? 'My Drive'
+                : this.state.currentDirectoryName
             }`}
           </Text>
           <View
             style={{
-              flexBasis: "5%",
+              flexBasis: '5%',
             }}
           />
         </View>
@@ -111,36 +144,36 @@ export default class FilePicker extends React.Component {
 
 const styles = StyleSheet.create({
   filePicker: {
-    padding: "1 1",
+    padding: '1 1',
     width: 800,
     height: 400,
-    backgroundColor: "#222222",
-    borderColor: "black",
+    backgroundColor: '#222222',
+    borderColor: 'black',
     borderWidth: 2,
-    flexDirection: "column",
+    flexDirection: 'column',
   },
   header: {
-    padding: "1 1",
-    backgroundColor: "#111111",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    padding: '1 1',
+    backgroundColor: '#111111',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   headerText: {
     height: 40,
-    width: "80%",
+    width: '80%',
     paddingTop: 1,
-    textAlign: "center",
+    textAlign: 'center',
   },
   backButton: {
-    flexBasis: "5%",
-    padding: "1 1",
+    flexBasis: '5%',
+    padding: '1 1',
     width: 40,
     height: 40,
-    backgroundColor: "#171717",
+    backgroundColor: '#171717',
   },
   files: {
-    padding: "1 1",
+    padding: '1 1',
     flexGrow: 2,
-    backgroundColor: "#151515",
+    backgroundColor: '#151515',
   },
 });
