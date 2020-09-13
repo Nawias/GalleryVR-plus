@@ -1,7 +1,16 @@
-import { Controller, Get, UseGuards, Req, Session } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Req,
+  Session,
+  Query,
+  Res,
+  Header,
+} from '@nestjs/common';
 import { GoogleService } from './google.service';
 import { AuthGuard } from '@nestjs/passport';
-import { request } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('google')
 export class GoogleController {
@@ -18,7 +27,21 @@ export class GoogleController {
   }
 
   @Get('listFiles')
-  async googleDriveListFiles(@Req() request, @Session() session) {
-    return await this.googleService.listFiles(request, session);
+  async googleDriveListFiles(
+    @Req() request,
+    @Session() session,
+    @Query('parent') parent,
+  ) {
+    return await this.googleService.listFiles(parent, session);
+  }
+
+  @Get('file')
+  async googleDriveGetFile(
+    @Req() request: Request,
+    @Session() session,
+    @Query('fileId') fileId,
+    @Res() response: Response,
+  ) {
+    this.googleService.getFile(fileId, session, response);
   }
 }

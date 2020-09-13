@@ -1,8 +1,9 @@
 import { Injectable, Session } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { User } from 'src/users/user.entity';
 import { google, drive_v3, Auth } from 'googleapis';
 import config from './google.config';
+import { file } from 'googleapis/build/src/apis/file';
 
 @Injectable()
 export class GoogleService {
@@ -40,17 +41,61 @@ export class GoogleService {
     };
   }
 
-  async listFiles(request, @Session() session) {
+  async listFiles(parent, @Session() session) {
     this.oAuth2Client.setCredentials({
       refresh_token: session.refreshToken,
       access_token: session.accessToken,
     });
+    let parentFolder =
+      parent !== undefined ? parent : await this.getRootFolder(session);
     let result = (
       await this.drive.files.list({
-        corpora: 'user',
+        q: `(mimeType='application/vnd.google-apps.folder' or mimeType contains 'image/' or mimeType contains 'video/') and '${parentFolder}' in parents`,
+        fields: 'files(id, name,parents, mimeType, webContentLink)',
+        spaces: 'drive',
       })
-    ).data;
+    ).data.files;
     this.oAuth2Client.setCredentials({});
     return result;
+  }
+  async getRootFolder(@Session() session) {
+    let rootFolder = '';
+    let folders = (
+      await this.drive.files.list({
+        q: `mimeType='application/vnd.google-apps.folder'`,
+        fields: 'files(id, name,parents)',
+        spaces: 'drive',
+      })
+    ).data.files;
+    folders.forEach(folder => {
+      folder.parents.forEach(parent => {
+        if (folders.find(f => f.id == parent) === undefined)
+          rootFolder = parent;
+      });
+    });
+
+    return rootFolder;
+  }
+
+  async getFile(fileId: any, session: any, response: Response): Promise<any> {
+    this.oAuth2Client.setCredentials({
+      refresh_token: session.refreshToken,
+      access_token: session.accessToken,
+    });
+
+    this.drive.files.get(
+      { fileId: fileId, alt: 'media' },
+      { responseType: 'stream' },
+      async (err, res) => {
+        res.data
+          .on('end', () => {
+            console.log('Done');
+          })
+          .on('error', err => {
+            console.log('Error', err);
+          })
+          .pipe(response);
+      },
+    );
   }
 }
