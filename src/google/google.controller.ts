@@ -41,8 +41,10 @@ export class GoogleController {
     @Req() request: Request,
     @Session() session,
     @Query('fileId') fileId,
+    @Query('filename') filename,
     @Res() response: Response,
   ) {
+    response.header('Content-Disposition', 'inline; filename=' + filename);
     this.googleService.getFile(fileId, session, response);
   }
 }

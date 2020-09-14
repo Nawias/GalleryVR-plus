@@ -14,15 +14,16 @@
   <body>
     <!-- Attachment point for your app -->
     <div id="container"></div>
+    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
     <script src="./client.bundle?platform=vr"></script>
     <script>
       // Initialize the React 360 application
       React360.init(
-        "index.bundle?platform=vr&dev=true",
-        document.getElementById("container"),
+        'index.bundle?platform=vr&dev=true',
+        document.getElementById('container'),
         {
-          assetRoot: "static_assets/",
-        }
+          assetRoot: 'static_assets/',
+        },
       );
     </script>
     <script src="https://cdn.jsdelivr.net/npm/webvr-polyfill@latest/build/webvr-polyfill.js"></script>

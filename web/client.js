@@ -3,6 +3,7 @@
 
 import { ReactInstance } from 'react-360-web';
 import Axios from 'axios';
+import DashVideoPlayer from './DashVideoPlayer';
 
 function isUserLoggedIn() {
   let isLoggedIn = Axios.get('http://localhost:3000/ping', {
@@ -28,6 +29,7 @@ function init(bundle, parent, options = {}) {
     r360 = new ReactInstance(bundle, parent, {
       // Add custom options here
       fullScreen: true,
+      customVideoPlayers: [DashVideoPlayer],
       ...options,
     });
 

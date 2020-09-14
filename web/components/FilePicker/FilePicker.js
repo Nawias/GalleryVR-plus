@@ -73,7 +73,7 @@ export default class FilePicker extends React.Component {
 
   playFile = file => {
     console.log('playfile');
-    this.props.playFile && this.props.playFile(file.name);
+    this.props.playFile && this.props.playFile(file);
   };
 
   handleFileClick = file => {

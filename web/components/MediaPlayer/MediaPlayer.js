@@ -1,10 +1,10 @@
-import React from "react";
-import { VideoPlayer, VideoControl } from "../../src/VideoExtra";
-import { View, Environment, asset, StyleSheet } from "react-360";
-import VideoModule from "VideoModule";
+import React from 'react';
+import { VideoPlayer, VideoControl } from '../../src/VideoExtra';
+import { View, Environment, asset, StyleSheet } from 'react-360';
+import VideoModule from 'VideoModule';
 
 export default class MediaPlayer extends React.Component {
-  spatialPlayer = VideoModule.createPlayer("spatial");
+  spatialPlayer = VideoModule.createPlayer('spatial');
 
   componentDidMount = () => {
     this.update();
@@ -15,14 +15,14 @@ export default class MediaPlayer extends React.Component {
   };
 
   update() {
-    if (this.props.stereo !== "2D") {
+    if (this.props.stereo !== '2D') {
       this.spatialPlayer.play({
-        source: { url: this.props.source.uri },
+        source: { url: this.props.source.uri, fileFormat: 'mp4' },
         muted: false,
       });
-      Environment.setBackgroundVideo("spatial", {});
+      Environment.setBackgroundVideo('spatial', {});
     } else {
-      Environment.setBackgroundImage(asset("360_world.jpg"));
+      Environment.setBackgroundImage(asset('360_world.jpg'));
     }
   }
 
@@ -31,11 +31,11 @@ export default class MediaPlayer extends React.Component {
   }
 
   renderSpatialOrFlatVideo = () => {
-    if (this.props.stereo === "2D") {
+    if (this.props.stereo === '2D') {
       return (
         <View
           style={{
-            borderColor: "#639dda",
+            borderColor: '#639dda',
             borderWidth: 2,
           }}
         >
@@ -56,9 +56,9 @@ export default class MediaPlayer extends React.Component {
           player={this.spatialPlayer}
           style={[
             {
-              height: "10%",
-              width: "100%",
-              alignSelf: "flex-end",
+              height: '10%',
+              width: '100%',
+              alignSelf: 'flex-end',
               opacity: 0.5,
             },
           ]}
@@ -76,10 +76,10 @@ export default class MediaPlayer extends React.Component {
 
 const styles = StyleSheet.create({
   mediaPlayer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "90%",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '90%',
     padding: 20,
   },
 });
